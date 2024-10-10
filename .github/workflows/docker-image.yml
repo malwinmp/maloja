@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           #context: .
-          dockerfile: Containerfile  # Specify the Containerfile instead of Dockerfile
+          file: ./Containerfile  # Specify the Containerfile instead of Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/my-docker-image:latest
 
