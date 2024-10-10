@@ -13,6 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Containerfile --tag my-image-name:$(date +%s)
+      # Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push the Docker image using Containerfile
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          dockerfile: Containerfile  # Specify the Containerfile instead of Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/my-docker-image:latest
+
+      # Optional: Verify that the image is available
+      - name: Verify Docker image
+        run: |
+          docker pull ghcr.io/${{ github.repository }}/my-docker-image:latest
